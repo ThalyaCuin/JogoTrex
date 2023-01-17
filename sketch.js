@@ -26,55 +26,60 @@ function preload(){
   obstacle4 = loadImage("obstacle4.png");
   obstacle5 = loadImage("obstacle5.png");
   obstacle6 = loadImage("obstacle6.png");
-
-  restartImg = loadImage("restart.png");
-  gameOverImg = loadImage("gameOver.png");
+  
+   restartImg = loadImage("restart.png")
+  gameOverImg = loadImage("gameOver.png")
   
 }
 
 function setup() {
   createCanvas(600, 200);
   
-  //crie sprite de trex
   trex = createSprite(50,180,20,50);
   trex.addAnimation("running", trex_running);
-  trex.addAnimation("collided" , trex_collided)
+  trex.addAnimation("collided" ,trex_collided);
+
   trex.scale = 0.5;
   
   ground = createSprite(200,180,400,20);
   ground.addImage("ground",groundImage);
   ground.x = ground.width /2;
-  ground.velocityX = -4;
-
-  gameOver = createSprite(300,100);
+  
+    gameOver = createSprite(300,100);
   gameOver.addImage(gameOverImg);
-
+  
   restart = createSprite(300,140);
   restart.addImage(restartImg);
   
-  
+  gameOver.scale = 0.5;
+  restart.scale = 0.5;
   invisibleGround = createSprite(200,190,400,10);
   invisibleGround.visible = false;
   
-  //criar grupos de Obstaculos e Nuvens 
-//  grupoObstaculos = createGroup();
-  //grupoNuvens = createGroup();
+  //criar obstáculos e nuvens 
 
-    obstaclesGroup = new  Group();
-    cloudsGroup = new Group();
-    
-    console.log("Olá" + 5);
-    
-    score = 0;
-  }
+  obstaclesGroup = createGroup();
+  cloudsGroup = createGroup();
   
+  console.log("Hello" + 5);
+  
+  trex.setCollider("circle",0,0,40);
+  trex.debug = true
+  
+  score = 0;
+}
 
 function draw() {
   background(180);
   //exibindo pontuação
-  text("Pontuação: "+ score, 500,50);
+  text("Score: "+ score, 500,50);
+  
+    console.log("this is ",gameState)
+
   
   if(gameState === PLAY){
+     gameOver.visible = false
+    restart.visible = false
     //mover o solo
     ground.velocityX = -4;
     //pontuação
@@ -84,7 +89,7 @@ function draw() {
       ground.x = ground.width/2;
     }
     
-    //pular quando tecla espaço for pressionada
+    //pular quando a tecla espaço for pressionada
     if(keyDown("space")&& trex.y >= 100) {
         trex.velocityY = -13;
     }
@@ -95,39 +100,39 @@ function draw() {
     //gerar as nuvens
     spawnClouds();
   
-    //gerar obstáculos no solo
+    //gerar obstáculos no chão
     spawnObstacles();
-
+    
     if(obstaclesGroup.isTouching(trex)){
-      gameState = END;
+        gameState = END;
+    }
   }
-}
-else if (gameState === END) {
-  ground.velocityX = 0;
-
-console.log("olá")
-  gameOver.visible = true;
-  restart.visible = true;
-
-  ground.velocityX = 0;
-  trex.velocityY = 0
-
-  //mudar a animação do trex
-  trex.changeAnimation("collide", trex_collided);
-
-  //definir tempo de vida aos objetos do jogo para que nunca sejam destruídos
-obstaclesGroup.setlifetimeEach(-1);
-cloudsGroup.setlifetimeEach(-1);
-
-
- obstaclesGroup.setVelocityXEach(0);
- cloudsGroup.setVelocityXEach(0);
-}
+  else if (gameState === END) {
+    console.log("hey")
+     gameOver.visible = true;
+     restart.visible = true;
+    
+     ground.velocityX = 0;
+     trex.velocityY = 0
+    
+     //mudar a animação do trex
+     trex.changeAnimation("collided", trex_collided);
+    
+     //definir tempo de vida aos objetos do jogo para que nunca sejam destruídos
+   obstaclesGroup.setLifetimeEach(-1);
+   cloudsGroup.setLifetimeEach(-1);
+    
+    obstaclesGroup.setVelocityXEach(0);
+    cloudsGroup.setVelocityXEach(0);
+  }
  
-  //impede o trex de cair
-  trex.collide(invisibleGround);
-  
-  
+
+ //impedir que o trex caia
+ trex.collide(invisibleGround);
+ 
+ 
+ 
+ drawSprites();
   
   drawSprites();
 }
@@ -155,7 +160,7 @@ function spawnObstacles(){
       default: break;
     }
    
-    //atribua dimensão e tempo de vida aos obstáculos         
+    //atribua dimensão e tempo de vida aos obstáculos             
     obstacle.scale = 0.5;
     obstacle.lifetime = 300;
    
@@ -180,8 +185,7 @@ function spawnClouds() {
     cloud.depth = trex.depth;
     trex.depth = trex.depth + 1;
     
-    //adicionando nuvem ao grupo
+    //adicionando nuvens ao grupo
    cloudsGroup.add(cloud);
     }
 }
-
